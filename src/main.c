@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h> //access
 
 #define INPUT_CMD_LEN 1024
 #define TRUE 1
@@ -30,15 +31,41 @@ int main(int argc, char *argv[]) {
         printf("%s\n", input_cmd+5);
     }
     else if(strncmp(input_cmd, "type", 4) == 0) {
-      int i;
-      for(i = 0; i < NUM_BUILTINS; i++) {
+      int found = 0;
+
+      for(int i = 0; i < NUM_BUILTINS; i++) {
         if(strncmp(input_cmd+5, builtins[i], strlen(builtins[i])) == 0){
           printf("%s is a shell builtin\n", input_cmd+5);
-          break;
+          found = 1;
         }
       }
-      if(i == NUM_BUILTINS)
-        printf("%s not found\n", input_cmd+5);
+
+      if(found == 0)
+      {
+        const char* path_orig = getenv("PATH");
+        char *path = strdup(path_orig);
+        if(!path)
+        {
+          printf("path not found\n");
+          exit(-1);
+        }
+
+        char* token = strtok(path, ":");
+        while(token != NULL)
+        {
+          char cmd_full_path[1024];
+          snprintf(cmd_full_path, 1024, "%s/%s", token, input_cmd+5);
+          //printf("%s\n", cmd_full_path);
+          if(access(cmd_full_path, X_OK)==0){
+            printf("%s\n", cmd_full_path);
+            found = 1;
+            break;
+          }
+          token = strtok(NULL, ":");
+        }
+        if(found == 0)
+          printf("%s not found\n", input_cmd+5);
+      }
     }
     else
       printf("%s: command not found\n", input_cmd);
