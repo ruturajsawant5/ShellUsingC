@@ -9,9 +9,9 @@
 #define INPUT_CMD_LEN 1024
 #define TRUE 1
 #define CMD_LEN_MAX 256
-#define NUM_BUILTINS 3
+#define NUM_BUILTINS 4
 
-char builtins[NUM_BUILTINS][CMD_LEN_MAX] = {"exit", "echo", "type"};
+char builtins[NUM_BUILTINS][CMD_LEN_MAX] = {"exit", "echo", "type", "pwd"};
 
 int is_shell_builtin(char* cmd)
 {
