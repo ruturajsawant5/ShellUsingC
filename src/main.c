@@ -95,12 +95,17 @@ int main(int argc, char *argv[]) {
       printf("%s\n",pwd);
     }
     else if(strcmp(cmd, "cd") == 0) {
-      if(chdir(args) !=0){
+      const char* path = NULL;
+      if(strcmp(args,"~")==0)
+        path = getenv("HOME");
+      else
+       path = args;
+      if(chdir(path) !=0){
         if(errno == ENOENT)
           printf("cd: %s: No such file or directory\n", args);
       }
       
-      
+
     }
     else
     {
