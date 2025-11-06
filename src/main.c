@@ -9,9 +9,9 @@
 #define INPUT_CMD_LEN 1024
 #define TRUE 1
 #define CMD_LEN_MAX 256
-#define NUM_BUILTINS 4
+#define NUM_BUILTINS 5
 
-char builtins[NUM_BUILTINS][CMD_LEN_MAX] = {"exit", "echo", "type", "pwd"};
+char builtins[NUM_BUILTINS][CMD_LEN_MAX] = {"exit", "echo", "type", "pwd", "cd"};
 
 int is_shell_builtin(char* cmd)
 {
@@ -93,6 +93,9 @@ int main(int argc, char *argv[]) {
       char pwd[1024];
       getcwd(pwd, 1024);
       printf("%s\n",pwd);
+    }
+    else if(strcmp(cmd, "cd") == 0) {
+      chdir(args);
     }
     else
     {
