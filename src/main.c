@@ -89,6 +89,11 @@ int main(int argc, char *argv[]) {
           printf("%s not found\n", args);
       }
     }
+    else if(strcmp(cmd, "pwd") == 0) {
+      char pwd[1024];
+      getcwd(pwd, 1024);
+      printf("%s\n",cmd);
+    }
     else
     {
       char out_full_path[1024];
