@@ -95,7 +95,11 @@ int main(int argc, char *argv[]) {
       printf("%s\n",pwd);
     }
     else if(strcmp(cmd, "cd") == 0) {
-      chdir(args);
+      if(chdir(args) !=0){
+        if(errno == ENOENT)
+          printf("cd: %s: No such file or directory\n", args);
+      }
+      
     }
     else
     {
