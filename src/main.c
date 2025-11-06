@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
     else if(strcmp(cmd, "pwd") == 0) {
       char pwd[1024];
       getcwd(pwd, 1024);
-      printf("%s\n",cmd);
+      printf("%s\n",pwd);
     }
     else
     {
