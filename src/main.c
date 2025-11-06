@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     //remove trailing spaces
     input_cmd[strcspn(input_cmd, "\n")] = '\0';
 
-    if(strncmp(input_cmd, "exit", 4)) {
+    if(strncmp(input_cmd, "exit", 4) == 0) {
         exit(0);
     }
 
