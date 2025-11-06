@@ -3,20 +3,23 @@
 #include <string.h>
 
 #define INPUT_CMD_LEN 1024
-
+#define TRUE 1
 int main(int argc, char *argv[]) {
-  // Flush after every printf
-  setbuf(stdout, NULL);
 
-  printf("$ ");
+  while(TRUE)
+  {
+    // Flush after every printf
+    setbuf(stdout, NULL);
 
-  char input_cmd[INPUT_CMD_LEN];
-  fgets(input_cmd, INPUT_CMD_LEN, stdin);
+    printf("$ ");
 
-  //remove trailing spaces
-  input_cmd[strcspn(input_cmd, "\n")] = '\0';
+    char input_cmd[INPUT_CMD_LEN];
+    fgets(input_cmd, INPUT_CMD_LEN, stdin);
 
-  printf("%s: command not found\n", input_cmd);
+    //remove trailing spaces
+    input_cmd[strcspn(input_cmd, "\n")] = '\0';
 
+    printf("%s: command not found\n", input_cmd);
+  }
   return 0;
 }
