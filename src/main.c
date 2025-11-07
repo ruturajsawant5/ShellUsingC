@@ -48,42 +48,51 @@ int is_in_path(char* cmd, char* out_full_path)
 
 char** parse_cmd(const char* cmd, int* out_count)
 {
-  char** args = malloc(MAX_ARGS*sizeof(char*));
-  int count = 0;
+    char** args = malloc(MAX_ARGS * sizeof(char*));
+    int count = 0;
   
-  const char* p = cmd;
-  while(*p)
-  {
-    //skip spaces
-    while(isspace((unsigned char)*p))
-      p++;
+    const char* p = cmd;
+    while (*p)
+    {
+        // skip spaces
+        while (isspace((unsigned char)*p))
+            p++;
     
-    if(*p == '\0')
-      break;
+        if (*p == '\0')
+            break;
 
-    char buffer[1024];
-    int bi = 0; //buffer indesx
+        char buffer[1024];
+        int bi = 0;
 
-    if (*p == '\'') {
-        // quoted arg
-        p++; // skip opening quote
-        while (*p && *p != '\'') {
-            buffer[bi++] = *p++;
-        }
-        if (*p == '\'') p++; // skip closing quote
-    } else {
-        // unquoted arg
         while (*p && !isspace((unsigned char)*p)) {
-            buffer[bi++] = *p++;
+            // Handle two single-quotes in a row: skip them
+            if (p[0] == '\'' && p[1] == '\'') {
+                p += 2; // ignore both
+                continue;
+            }
+
+            if (*p == '\'') {
+                // quoted section
+                p++; // skip opening '
+                while (*p && *p != '\'') {
+                    buffer[bi++] = *p++;
+                }
+                if (*p == '\'')
+                    p++; // skip closing '
+            } else {
+                buffer[bi++] = *p++;
+            }
         }
+
+        buffer[bi] = '\0';
+
+        if (bi > 0)  // only add if not empty
+            args[count++] = strdup(buffer);
     }
 
-    buffer[bi] = '\0';
-    args[count++] = strdup(buffer);
-  }
-  args[count] = NULL;
-  *out_count = count;
-  return args;
+    args[count] = NULL;
+    *out_count = count;
+    return args;
 }
 
 int main(int argc, char *argv[]) {
