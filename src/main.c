@@ -5,11 +5,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <ctype.h>
 
 #define INPUT_CMD_LEN 1024
 #define TRUE 1
 #define CMD_LEN_MAX 256
 #define NUM_BUILTINS 5
+#define MAX_ARGS 32
 
 char builtins[NUM_BUILTINS][CMD_LEN_MAX] = {"exit", "echo", "type", "pwd", "cd"};
 
@@ -44,6 +46,46 @@ int is_in_path(char* cmd, char* out_full_path)
   return 0;
 }
 
+char** parse_cmd(const char* cmd, int* out_count)
+{
+  char** args = malloc(MAX_ARGS*sizeof(char*));
+  int count = 0;
+  
+  const char* p = cmd;
+  while(*p)
+  {
+    //skip spaces
+    while(isspace((unsigned char)*p))
+      p++;
+    
+    if(*p == '\0')
+      break;
+
+    char buffer[1024];
+    int bi = 0; //buffer indesx
+
+    if (*p == '\'') {
+        // quoted arg
+        p++; // skip opening quote
+        while (*p && *p != '\'') {
+            buffer[bi++] = *p++;
+        }
+        if (*p == '\'') p++; // skip closing quote
+    } else {
+        // unquoted arg
+        while (*p && !isspace((unsigned char)*p)) {
+            buffer[bi++] = *p++;
+        }
+    }
+
+    buffer[bi] = '\0';
+    args[count++] = strdup(buffer);
+  }
+  args[count] = NULL;
+  *out_count = count;
+  return args;
+}
+
 int main(int argc, char *argv[]) {
 
   while(TRUE) {
@@ -57,52 +99,59 @@ int main(int argc, char *argv[]) {
     //remove trailing spaces
     input_cmd[strcspn(input_cmd, "\n")] = '\0';
 
-    char *cmd = input_cmd;
-    char *args = NULL;
-    char *space = strchr(input_cmd, ' ');
+    //char *cmd = input_cmd;
+    //char *args = NULL;
+    //char *space = strchr(input_cmd, ' ');
 
-    if(space)
-    {
-      *space = '\0';
-      args = space + 1;
-    }
+    //if(space)
+    //{
+    //  *space = '\0';
+    //  args = space + 1;
+    //}
 
-    if(strcmp(cmd, "exit") == 0) {
+    if(input_cmd[0] == 0)
+      continue;
+
+    int n_args = 0;
+    char** parsed_cmd = parse_cmd(input_cmd, &n_args);
+
+    if(strcmp(parsed_cmd[0], "exit") == 0) {
         exit(0);
     }
-    else if(strcmp(cmd, "echo") == 0) {
-        printf("%s\n", input_cmd+5);
+    else if(strcmp(parsed_cmd[0], "echo") == 0) {
+      for(int i = 1; i < n_args; i++)  
+      printf("%s\n", parsed_cmd[i]);
     }
-    else if(strcmp(cmd, "type") == 0) {
+    else if(strcmp(parsed_cmd[0], "type") == 0) {
       int found = 0;
 
-      found = is_shell_builtin(args);
+      found = is_shell_builtin(parsed_cmd[1]);
       if(found == 1)
-        printf("%s is a shell builtin\n", args);
+        printf("%s is a shell builtin\n", parsed_cmd[1]);
       else
       {
         char out_full_path[1024];
-        found = is_in_path(args, out_full_path);
+        found = is_in_path(parsed_cmd[1], out_full_path);
         if(found == 1)
           printf("%s\n", out_full_path);
         else
-          printf("%s not found\n", args);
+          printf("%s not found\n", parsed_cmd[1]);
       }
     }
-    else if(strcmp(cmd, "pwd") == 0) {
+    else if(strcmp(parsed_cmd[0], "pwd") == 0) {
       char pwd[1024];
       getcwd(pwd, 1024);
       printf("%s\n",pwd);
     }
-    else if(strcmp(cmd, "cd") == 0) {
+    else if(strcmp(parsed_cmd[0], "cd") == 0) {
       const char* path = NULL;
-      if(strcmp(args,"~")==0)
+      if(strcmp(parsed_cmd[1],"~")==0)
         path = getenv("HOME");
       else
-       path = args;
+       path = parsed_cmd[1];
       if(chdir(path) !=0){
         if(errno == ENOENT)
-          printf("cd: %s: No such file or directory\n", args);
+          printf("cd: %s: No such file or directory\n", parsed_cmd[1]);
       }
       
 
@@ -110,9 +159,9 @@ int main(int argc, char *argv[]) {
     else
     {
       char out_full_path[1024];
-      int found = is_in_path(cmd, out_full_path);
+      int found = is_in_path(parsed_cmd[0], out_full_path);
       if(found == 0){
-        printf("%s: command not found\n", cmd);
+        printf("%s: command not found\n", parsed_cmd[0]);
         continue;
       }
 
@@ -126,15 +175,18 @@ int main(int argc, char *argv[]) {
       {
         int argc = 0;
         char *argv[32];
-        argv[argc++] = cmd; 
+        argv[argc++] = parsed_cmd[0]; 
 
-        if (args && *args != '\0') {
-          char *tok = strtok(args, " ");
-          while (tok) {
-              argv[argc++] = tok;
-              tok = strtok(NULL, " ");
-          }
-        }
+        //if (args && *args != '\0') {
+        //  char *tok = strtok(args, " ");
+        //  while (tok) {
+        //      argv[argc++] = tok;
+        //      tok = strtok(NULL, " ");
+        //  }
+        //}
+
+        for(int i = 1; i < n_args; i++)
+          argv[argc++] = strdup(parsed_cmd[0]);
 
         argv[argc] = NULL;
 
