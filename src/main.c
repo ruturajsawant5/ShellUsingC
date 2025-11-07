@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
         //}
 
         for(int i = 1; i < n_args; i++)
-          argv[argc++] = strdup(parsed_cmd[0]);
+          argv[argc++] = strdup(parsed_cmd[i]);
 
         argv[argc] = NULL;
 
