@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
       for(int i = 1; i < n_args; i++){
         printf("%s", parsed_cmd[i]);
         if(i != n_args - 1)
-          printf(' ');
+          printf(" ");
       }
       printf("\n");
     }
