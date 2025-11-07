@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
     }
     else if(strcmp(parsed_cmd[0], "echo") == 0) {
       for(int i = 1; i < n_args; i++)  
-      printf("%s\n", parsed_cmd[i]);
+      printf("%s ", parsed_cmd[i]);
     }
     else if(strcmp(parsed_cmd[0], "type") == 0) {
       int found = 0;
