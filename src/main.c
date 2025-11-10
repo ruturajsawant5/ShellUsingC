@@ -90,7 +90,7 @@ char** parse_cmd(const char* cmd, int* out_count)
                 // quoted section
                 p++; // skip opening "
                 while (*p && *p != '\"') {
-                    if(p[0] == '\\' && ((p[1] == '\'') || (p[1] == '\"') ))
+                    if(p[0] == '\\' && ((p[1] == '\'') || (p[1] == '\"') ||  (p[0] == '\\')))
                       p++;
                     buffer[bi++] = *p++;
                 }
