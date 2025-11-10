@@ -71,6 +71,11 @@ char** parse_cmd(const char* cmd, int* out_count)
                 continue;
             }
 
+            if (p[0] == '\"' && p[1] == '\"') {
+                p += 2; // ignore both
+                continue;
+            }
+
             if (*p == '\'') {
                 // quoted section
                 p++; // skip opening '
@@ -79,6 +84,14 @@ char** parse_cmd(const char* cmd, int* out_count)
                 }
                 if (*p == '\'')
                     p++; // skip closing '
+            } else if (*p == '\"') {
+                // quoted section
+                p++; // skip opening "
+                while (*p && *p != '\"') {
+                    buffer[bi++] = *p++;
+                }
+                if (*p == '\"')
+                    p++; // skip closing ""
             } else {
                 buffer[bi++] = *p++;
             }
