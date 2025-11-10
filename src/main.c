@@ -80,8 +80,8 @@ char** parse_cmd(const char* cmd, int* out_count)
                 // quoted section
                 p++; // skip opening '
                 while (*p && *p != '\'') {
-                    if(*p == '\\')
-                      p++;
+                    //if(*p == '\\')
+                    //  p++;
                     buffer[bi++] = *p++;
                 }
                 if (*p == '\'')
@@ -90,8 +90,8 @@ char** parse_cmd(const char* cmd, int* out_count)
                 // quoted section
                 p++; // skip opening "
                 while (*p && *p != '\"') {
-                    if(*p == '\\')
-                      p++;
+                    //if(*p == '\\')
+                    //  p++;
                     buffer[bi++] = *p++;
                 }
                 if (*p == '\"')
