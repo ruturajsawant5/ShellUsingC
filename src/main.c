@@ -92,7 +92,17 @@ char** parse_cmd(const char* cmd, int* out_count)
                 while (*p && *p != '\"') {
                     if(p[0] == '\\' && ((p[1] == '\'') || (p[1] == '\"') ||  (p[0] == '\\')))
                       p++;
-                    buffer[bi++] = *p++;
+                    if(*p == '\'')
+                    {
+                      p++;
+                      buffer[bi++] = '\'';
+                      while(*p && *p!='\'')
+                        buffer[bi++] = *p++;
+                      p++;
+                      buffer[bi++] = '\'';
+                    }
+                    else
+                      buffer[bi++] = *p++;
                 }
                 if (*p == '\"')
                     p++; // skip closing ""
