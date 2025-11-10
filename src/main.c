@@ -98,7 +98,7 @@ char** parse_cmd(const char* cmd, int* out_count)
                     {
                       p++;
                       buffer[bi++] = '\'';
-                      while(*p && *p!='\'')
+                      while(*p && *p!='\'' && *p !='\"')
                         buffer[bi++] = *p++;
                       if(*p && *p == '\'') {
                         buffer[bi++] = '\'';
